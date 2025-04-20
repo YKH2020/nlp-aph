@@ -1,11 +1,11 @@
 from langchain_ollama import OllamaLLM
 from create_prompt import create_prompt
-from access_local_db import access_local_db
+from access_db import access_db
 from non_dl_naive import non_dl, naive
 
 def main():
     query = input()
-    db = access_local_db()
+    db = access_db()
     search_results, final_prompt = create_prompt(db, query)
 
     model = OllamaLLM(model='aya-expanse:latest')
