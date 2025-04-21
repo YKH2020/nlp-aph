@@ -10,28 +10,36 @@ import re
 load_dotenv()
 HF_TOKEN = os.getenv("HF_TOKEN")
 
-# Initialize Streamlit app
-st.title("RAG Q&A System")
-st.write("Ask a question and get answers from our knowledge base!")
+# Page config
+st.set_page_config(page_title="Autism Parent Helper", layout="wide")
 
-# Set up InferenceClient with Cohere provider
+# Sidebar
+st.sidebar.markdown("""
+This is a **Retrieval-Augmented Generation** (RAG) system powered by the **Aya Expanse 8B** model via Hugging Face.
+
+It provides helpful answers sourced from trusted documents to assist parents navigating autism-related topics.
+
+_Improvements coming soon!_
+""")
+
+# Init chat state
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
+
+# Cache: inference + DB
 @st.cache_resource
 def get_hf_client():
-    return InferenceClient(
-        provider="cohere",
-        api_key=HF_TOKEN,
-    )
+    return InferenceClient(provider="cohere", api_key=HF_TOKEN)
 
-# Initialize database connection
 @st.cache_resource
 def init_db():
     return access_db()
 
+# Clean prompt
 def sanitize_prompt(text: str) -> str:
-        # Remove control characters *except* newline (\n), carriage return (\r), and tab (\t)
-        return re.sub(r'[^\x09\x0A\x0D\x20-\x7E]', '', text)
+    return re.sub(r'[^\x09\x0A\x0D\x20-\x7E]', '', text)
 
-# Process query and generate response
+# Generate response
 def process_query(query):
     db = init_db()
     search_results, final_prompt = create_prompt(db, query, k=5)
@@ -42,51 +50,55 @@ def process_query(query):
         completion = client.chat.completions.create(
             model="CohereLabs/aya-expanse-8b",
             messages=[
-                {
-                    "role": "user",
-                    "content": final_prompt
-                }
+                {"role": "user", "content": final_prompt}
             ]
         )
         response = completion.choices[0].message.content
-
     except Exception as e:
         st.error(f"Error calling inference API: {str(e)}")
         return f"Error: {str(e)}", "", []
 
-    # Get sources
-    sources = '\n\n'.join(
-        {f"{piece.metadata.get('title', 'Unknown Title')} — {piece.metadata.get('author', 'Unknown Author')}"
-         for piece, _ in search_results}
-    )
+    sources = '\n\n'.join({
+        f"{piece.metadata.get('title', 'Unknown Title')} — {piece.metadata.get('author', 'Unknown Author')}"
+        for piece, _ in search_results
+    })
+    relevance_scores = [score for _, score in search_results]
 
-    return response, sources, [score for _, score in search_results]
+    return response, sources, relevance_scores
 
-# Create the user interface
-query = st.text_input("Enter your question:")
-submit_button = st.button("Submit")
+# App title
+st.title("🤝 Autism Parent Helper (APH)")
 
-# When user clicks submit
-if submit_button and query:
-    with st.spinner("Processing your question..."):
-        response, sources, relevance_scores = process_query(query)
+# Input bar
+query = st.chat_input("Ask a question about autism, parenting, or support...")
 
-    st.subheader("Answer:")
-    st.write(response)
+# Trigger a new response
+if query:
+    with st.spinner("Thinking..."):
+        response, sources, scores = process_query(query)
+    st.session_state.chat_history.append({
+        "query": query,
+        "response": response,
+        "sources": sources,
+        "scores": scores
+    })
+    st.rerun()  # Force refresh to show new output immediately
 
-    with st.expander("View Sources"):
-        st.write("This response is based on the following sources:")
-        st.write(sources)
+# Show chat messages
+for entry in st.session_state.chat_history:
+    with st.chat_message("user", avatar="❓"):
+        st.markdown(entry["query"])
+    with st.chat_message("assistant", avatar="🤗"):
+        st.markdown(entry["response"])
+        with st.expander("📖 Sources"):
+            st.markdown(entry["sources"] or "No sources found.")
+        with st.expander("📈 Relevance Scores"):
+            for i, score in enumerate(entry["scores"]):
+                st.write(f"Document {i+1}: {score:.4f}")
 
-    with st.expander("View Relevance Scores"):
-        st.write("Relevance scores of retrieved documents:")
-        for i, score in enumerate(relevance_scores):
-            st.write(f"Document {i+1}: {score:.4f}")
-
-# Sidebar info
-st.sidebar.title("About")
-st.sidebar.info(
-    "This is a RAG (Retrieval-Augmented Generation) Q&A system. "
-    "It retrieves relevant information from a knowledge base and "
-    "uses the Aya Expanse model via Hugging Face to generate answers based on that context."
-)
+# Centered clear button
+st.markdown("---")
+clear_btn = st.button("🔌 Clear Chat", use_container_width=True)
+if clear_btn:
+    st.session_state.chat_history = []
+    st.rerun()
