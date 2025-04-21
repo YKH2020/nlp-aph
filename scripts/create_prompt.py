@@ -1,8 +1,8 @@
 from langchain_chroma import Chroma
 from langchain_core.prompts import ChatPromptTemplate
 
-def create_prompt(db: Chroma, query: str) -> tuple[list, str]:
-    search_results = db.similarity_search_with_score(query, k=5) # Messing around
+def create_prompt(db: Chroma, query: str, k: int = 5) -> tuple[list, str]:
+    search_results = db.similarity_search_with_score(query, k) # Messing around
 
     PROMPT = '''
     Answer the question using the following context:

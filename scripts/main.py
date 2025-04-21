@@ -6,7 +6,7 @@ from non_dl_naive import non_dl, naive
 def main():
     query = input()
     db = access_db()
-    search_results, final_prompt = create_prompt(db, query)
+    search_results, final_prompt = create_prompt(db, query, k=5)
 
     model = OllamaLLM(model='aya-expanse:latest')
     response = model.invoke(final_prompt)
