@@ -1,4 +1,4 @@
-from load_docs import load_docs
+from load_docs import load_docs #from scripts.load_docs import load_docs
 from collections import defaultdict
 from sklearn.feature_extraction.text import TfidfVectorizer
 from hmmlearn.hmm import GaussianHMM

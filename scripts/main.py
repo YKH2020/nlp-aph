@@ -25,6 +25,6 @@ if __name__ == '__main__':
     main()
 
     # ----- Uncomment the following if you want to see the other approaches: ----- #
-    # PATH = '../data/in_use'
+    # PATH = './data/in_use'
     # naive(PATH)
     # non_dl(PATH)

@@ -3,6 +3,8 @@
 data/in_use/
 data/deprecated/
 scripts/__pycache__/
+tests/__pycache__/
+.pytest_cache/
 
 # ----------------------------------- Files ---------------------------------- #
 .env
