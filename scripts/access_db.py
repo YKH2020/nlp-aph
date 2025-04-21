@@ -1,3 +1,7 @@
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 from langchain_openai.embeddings import OpenAIEmbeddings
 from langchain_chroma import Chroma
 from dotenv import load_dotenv
