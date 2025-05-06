@@ -1,5 +1,10 @@
 # __Autism Parent Helper (RAG Chatbot)__
 
+__TODO:__ 
+* Explore sentence clustering / non-DL / naive approaches for data cleaning / organization
+* Switch Database type
+* Shift to a different deployment platform / migrate to a blog website (odidya?)
+
 ### _Description:_
 Parents of children diagnosed with autism often face confusion about their child’s condition, especially with nonverbal children—how do i help them communicate? Are there better strategies for gauging their learning?. These questions are rarely answered, with minimal tools that directly educate parents of both verbal and nonverbal special needs children. Although tools and datasets exist to support speech and early autism detection, a comprehensive educational solution remains lacking.
 
@@ -15,16 +20,14 @@ Lived experiences and firsthand accounts are of paramount importance. This proje
 - *The Reason I Jump* – Naoki Higashida
 
 ### _Design Decisions:_
-The approach uses the above sources as a corpus for a RAG Chatbot powered by Cohere’s Aya Expanse. While naive, non-deep learning methods aren’t viable, we developed sentence clustering via HMM and exact match via Jaccard similarity. Users ask a question, which is searched via cosine similarity in a ChromaDB vector store of our source material. The retrieved context is added to the question to form a prompt, passed to the model for an answer. For chunking, OpenAI’s embedding-based semantic chunking struck the best balance between character limits and computational cost. Aya Expanse (8B) was used locally via Ollama for testing and Hugging Face for deployment. LangChain's PDF loader processed the sources into `Document` pages, which were semantically chunked. Appendices and TOCs were excluded to keep search results relevant.
+The approach uses the above sources as a corpus for a RAG Chatbot powered by Cohere’s Aya Expanse. Users ask a question, which is searched via cosine similarity in a ChromaDB vector store of our source material. The retrieved context is added to the question to form a prompt, passed to the model for an answer. For chunking, OpenAI’s embedding-based semantic chunking struck the best balance between character limits and computational cost. Aya Expanse (8B) was used locally via Ollama for testing and Hugging Face for deployment. LangChain's PDF loader processed the sources into `Document` pages, which were semantically chunked. Appendices and TOCs were excluded to keep search results relevant.
 
 ### _Modeling Approach & Results:_
 The deep learning RAG chatbot's identity comes from a simple, prompt-based input and clear output based on writing from autistic individuals and trusted community voices—unlike confusing advice from traditional organizations.
 
 Running Aya Expanse locally via Ollama and LangChain yielded strong results. However, switching to Hugging Face’s inference API revealed issues: NUL characters from database retrieval were breaking outputs. These weren’t picked up locally but impacted the API, so preprocessing was added to strip them out.
 
-Results across methods:  
-- **Naive (Jaccard)**: Found exact sentence matches, but NULs occasionally disrupted performance. (Switching DBs is a future task.)  
-- **Non-DL (HMM)**: Clusters topics decently, but struggles with nuance and can default to length-based grouping for some sources (these were denoted by a struggle in convergence).  
+Results:
 - **DL (Aya)**: As expected, this performed best, enabling context-aware generation. Evaluated via LLM judgment and feedback from two parents of special needs children—results were great.
 
 ### _Why is RAG the only viable approach?_
@@ -48,8 +51,6 @@ To run the test suite:
 ```bash
 python tests
 ```
-
-also from the root directory. Note that for the test_naive.py test, the original pdfs used would have to be accessed (due to copyright concerns, these are not included in the repo).
 
 #### Website Link
 You can also access the deployed version here:  

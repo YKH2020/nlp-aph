@@ -1,7 +1,6 @@
 from langchain_ollama import OllamaLLM
 from create_prompt import create_prompt
 from access_db import access_db
-from non_dl_naive import non_dl, naive
 
 def main():
     query = input()
@@ -23,8 +22,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-    # ----- Uncomment the following if you want to see the other approaches: ----- #
-    # PATH = './data/in_use'
-    # naive(PATH)
-    # non_dl(PATH)
