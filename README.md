@@ -4,6 +4,7 @@ __TODO:__
 * Explore sentence clustering / non-DL / naive approaches for data cleaning / organization
 * Switch Database type
 * Shift to a different deployment platform / migrate to a blog website (odidya?)
+* Parents provide a better ground truth. Curate that for tests!
 
 ### _Description:_
 Parents of children diagnosed with autism often face confusion about their child’s condition, especially with nonverbal children—how do i help them communicate? Are there better strategies for gauging their learning?. These questions are rarely answered, with minimal tools that directly educate parents of both verbal and nonverbal special needs children. Although tools and datasets exist to support speech and early autism detection, a comprehensive educational solution remains lacking.
