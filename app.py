@@ -1,7 +1,7 @@
 import streamlit as st
 from huggingface_hub import InferenceClient
-from scripts.create_prompt import create_prompt
-from scripts.access_db import access_db
+from deprecated.create_prompt import create_prompt
+from deprecated.access_db import access_db
 import os
 from dotenv import load_dotenv
 import re

@@ -1,24 +1,28 @@
-from langchain_ollama import OllamaLLM
-from create_prompt import create_prompt
-from access_db import access_db
+import ollama
+from knowledge_prompt import retrieve_context
 
 def main():
-    query = input()
-    db = access_db()
-    search_results, final_prompt = create_prompt(db, query, k=5)
+    query = input("Your question: ")
 
-    model = OllamaLLM(model='aya-expanse:latest')
-    response = model.invoke(final_prompt)
-    print(f'Response:\n{response}')
+    # db = access_db()
+    # search_results, final_prompt = create_prompt(db, query, k=5)
 
-    print([score for _, score in search_results])
+    context = retrieve_context(query)
+    prompt = f"""Answer the question using the following context:
 
-    sources = '\n\n_______\n\n'.join(
-        {f"{piece.metadata.get('title')} — {piece.metadata.get('author')}"
-        for piece, _ in search_results}
+    {context}
+
+    Question: {query}"""
+
+    # Replace langchain_ollama with official ollama call
+    response = ollama.generate(
+        model='qwen3:8b',
+        prompt=prompt
     )
-    print(f'We got this response based on the following trustworthy and reputable source(s):\n\n{sources}')
-    # Update Metadata in future!
+
+    print(f"\nResponse:\n{response['response']}")
+
+    # Different Source listing method in the future.
 
 if __name__ == '__main__':
     main()
