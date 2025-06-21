@@ -16,7 +16,7 @@ def main():
 
     # Replace langchain_ollama with official ollama call
     response = ollama.generate(
-        model='qwen3:8b',
+        model='zephyr-7b-beta:latest',
         prompt=prompt
     )
 
