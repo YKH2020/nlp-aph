@@ -1,0 +1,69 @@
+I have the following .py files in my py_scripts folder:
+
+knowledge_prompt.py -
+import boto3
+
+def retrieve_context(query: str) -> str:
+    """
+    Retrieve relevant context from an AWS Knowledge Base using the Bedrock Agent Runtime API.
+    
+    Args:
+        query (str): The user's query to search for relevant context.
+    
+    Returns:
+        str: The retrieved context as a string.
+    """
+    # Initialize the Bedrock Agent Runtime client
+    bedrock = boto3.client("bedrock-agent-runtime", region_name="us-east-2")
+
+    # Retrieve relevant context from the knowledge base
+    retrieval_response = bedrock.retrieve(
+        knowledgeBaseId="EKJ8WM0BAW",
+        retrievalConfiguration={
+            "vectorSearchConfiguration": {"numberOfResults": 10}
+        },
+        retrievalQuery={"text": query}
+    )
+
+    # Extract content from the retrieval results
+    chunks = [doc["content"]["text"] for doc in retrieval_response["retrievalResults"]]
+
+    print(f"Retrieved {len(chunks)} chunks.")
+    for i, chunk in enumerate(chunks):
+        print(f"Chunk {i+1}: {chunk[:50]}...")
+
+    context = "\n\n".join(chunks)
+    
+    return context
+
+main.py -
+import ollama
+from knowledge_prompt import retrieve_context
+
+def main():
+    query = input("Your question: ")
+
+    # db = access_db()
+    # search_results, final_prompt = create_prompt(db, query, k=5)
+
+    context = retrieve_context(query)
+    prompt = f"""Answer the question using the following context:
+
+    {context}
+
+    Question: {query}"""
+
+    # Replace langchain_ollama with official ollama call
+    response = ollama.generate(
+        model='zephyr-7b-beta:latest',
+        prompt=prompt
+    )
+
+    print(f"\nResponse:\n{response['response']}")
+
+    # Different Source listing method in the future.
+
+if __name__ == '__main__':
+    main()
+
+How would I create a Rust version of this? So far I have created a basic cargo. Let me know what I should look out for and what exactly I should do.

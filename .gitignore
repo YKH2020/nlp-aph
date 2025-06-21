@@ -1,10 +1,8 @@
 # ---------------------------------- Directories --------------------------------- #
 /.venv/*
-data/in_use/
-data/deprecated/
-scripts/__pycache__/
-tests/__pycache__/
-.pytest_cache/
+/data/*
+py_scripts/__pycache__/
+rust_scripts/target/
 
 # ----------------------------------- Files ---------------------------------- #
 .env
