@@ -1,4 +1,7 @@
+import os
 import boto3
+from dotenv import load_dotenv
+load_dotenv()
 
 def retrieve_context(query: str) -> str:
     """
@@ -12,12 +15,13 @@ def retrieve_context(query: str) -> str:
     """
     # Initialize the Bedrock Agent Runtime client
     bedrock = boto3.client("bedrock-agent-runtime", region_name="us-east-2")
+    knowledge_base_id = os.getenv("KNOWLEDGE_BASE_ID")
 
     # Retrieve relevant context from the knowledge base
     retrieval_response = bedrock.retrieve(
-        knowledgeBaseId="EKJ8WM0BAW",
+        knowledgeBaseId=knowledge_base_id,
         retrievalConfiguration={
-            "vectorSearchConfiguration": {"numberOfResults": 10}
+            "vectorSearchConfiguration": {"numberOfResults": 5}
         },
         retrievalQuery={"text": query}
     )
