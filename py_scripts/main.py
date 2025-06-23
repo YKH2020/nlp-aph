@@ -1,28 +1,18 @@
-import ollama
 from knowledge_prompt import retrieve_context
+from zephyr import ask_zephyr
 
 def main():
-    query = input("Your question: ")
-
-    # db = access_db()
-    # search_results, final_prompt = create_prompt(db, query, k=5)
-
+    query = input("Your question: ").strip()
     context = retrieve_context(query)
+
     prompt = f"""Answer the question using the following context:
 
-    {context}
+{context}
 
-    Question: {query}"""
+Question: {query}"""
 
-    # Replace langchain_ollama with official ollama call
-    response = ollama.generate(
-        model='zephyr-7b-beta:latest',
-        prompt=prompt
-    )
+    response = ask_zephyr(prompt)
+    print("\nResponse:\n" + response)
 
-    print(f"\nResponse:\n{response['response']}")
-
-    # Different Source listing method in the future.
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

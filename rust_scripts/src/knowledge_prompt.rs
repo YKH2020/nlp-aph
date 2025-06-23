@@ -8,14 +8,19 @@ use aws_sdk_bedrockagentruntime::{
     },
 };
 use std::error::Error;
+use std::env;
+use dotenvy::dotenv;
 
 pub async fn retrieve_context(query: &str) -> Result<String, Box<dyn Error>> {
+    dotenv().ok();
+    let knowledge_base_id = env::var("KNOWLEDGE_BASE_ID")?;
+
     let config = aws_config::load_defaults(BehaviorVersion::latest()).await;
     let client = Client::new(&config);
 
     // Construct the retrieval configuration with vector search
     let vector_search_config = KnowledgeBaseVectorSearchConfiguration::builder()
-        .number_of_results(10)
+        .number_of_results(5)
         .build();
 
     let retrieval_config = KnowledgeBaseRetrievalConfiguration::builder()
@@ -30,7 +35,7 @@ pub async fn retrieve_context(query: &str) -> Result<String, Box<dyn Error>> {
     // Send retrieve request
     let response = client
         .retrieve()
-        .knowledge_base_id("EKJ8WM0BAW")
+        .knowledge_base_id(knowledge_base_id)
         .retrieval_configuration(retrieval_config)
         .retrieval_query(retrieval_query)
         .send()
