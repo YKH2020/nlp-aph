@@ -57,7 +57,7 @@ Comprehensive documentation is available in the [docs](./docs) directory:
    ```
    streamlit run app.py
    ```
-
+# [Video Presentation](https://youtu.be/oZWAXjmXgz0)
 ## Future Work
 
 - Explore sentence clustering / non-DL / naive approaches for data cleaning / organization
