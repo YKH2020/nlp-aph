@@ -48,10 +48,10 @@ pub async fn retrieve_context(query: &str) -> Result<String, Box<dyn Error>> {
         .filter_map(|r| r.content().map(|c| c.text().to_string()))
         .collect();
 
-    println!("Retrieved {} chunks.", chunks.len());
-    for (i, chunk) in chunks.iter().enumerate() {
-        println!("Chunk {}: {}...", i + 1, &chunk[..chunk.len().min(50)]);
-    }
+    // println!("Retrieved {} chunks.", chunks.len());
+    // for (i, chunk) in chunks.iter().enumerate() {
+    //     println!("Chunk {}: {}...", i + 1, &chunk[..chunk.len().min(50)]);
+    // }
 
     Ok(chunks.join("\n\n"))
 }

@@ -6,3 +6,8 @@ rust_scripts/target/
 
 # ----------------------------------- Files ---------------------------------- #
 .env
+
+# --------------------------------- summaries -------------------------------- #
+rust_scripts/.summary.txt
+py_scripts/.summary.txt
+.summary.txt

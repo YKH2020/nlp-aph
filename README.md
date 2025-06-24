@@ -1,15 +1,24 @@
-# __Autism Parent Helper (RAG Chatbot)__
+# Autism Parent Helper (RAG Chatbot)
 
-__TODO:__ 
-* Explore sentence clustering / non-DL / naive approaches for data cleaning / organization
-* Switch Database type
-* Shift to a different deployment platform / migrate to a blog website (odidya?)
-* Parents provide a better ground truth. Curate that for tests!
+A dual-implementation (Python/Rust) RAG chatbot designed to provide support, resources, and information to parents of children with autism.
 
-### _Description:_
-Parents of children diagnosed with autism often face confusion about their child’s condition, especially with nonverbal children—how do i help them communicate? Are there better strategies for gauging their learning?. These questions are rarely answered, with minimal tools that directly educate parents of both verbal and nonverbal special needs children. Although tools and datasets exist to support speech and early autism detection, a comprehensive educational solution remains lacking.
+## Description
 
-### _Data Sources:_ 
+Parents of children diagnosed with autism often face confusion about their child's condition, especially with nonverbal children—how do I help them communicate? Are there better strategies for gauging their learning? These questions are rarely answered, with minimal tools that directly educate parents of both verbal and nonverbal special needs children. Although tools and datasets exist to support speech and early autism detection, a comprehensive educational solution remains lacking.
+
+This project implements a Retrieval Augmented Generation (RAG) chatbot in both Python and Rust, allowing for performance comparison while providing valuable information to parents.
+
+## Features
+
+- Dual implementation in Python and Rust
+- Retrieval Augmented Generation (RAG) using AWS Bedrock
+- Local LLM support via Llamafile/Zephyr
+- Streamlit web interface
+- Performance comparison between implementations
+- Conversation memory and summarization
+
+## Data Sources
+
 Lived experiences and firsthand accounts are of paramount importance. This project draws insights from such information, specifically through the following sources:
 - *Sincerely, Your Autistic Child* – Emily Paige Ballou, Sharon daVanport, Morénike Giwa Onaiwu  
 - *Plankton Dreams* – Mukhopadhyay  
@@ -20,39 +29,37 @@ Lived experiences and firsthand accounts are of paramount importance. This proje
 - *Thinking in Pictures* – Temple Grandin  
 - *The Reason I Jump* – Naoki Higashida
 
-### _Design Decisions:_
-The approach uses the above sources as a corpus for a RAG Chatbot powered by Cohere’s Aya Expanse. Users ask a question, which is searched via cosine similarity in a ChromaDB vector store of our source material. The retrieved context is added to the question to form a prompt, passed to the model for an answer. For chunking, OpenAI’s embedding-based semantic chunking struck the best balance between character limits and computational cost. Aya Expanse (8B) was used locally via Ollama for testing and Hugging Face for deployment. LangChain's PDF loader processed the sources into `Document` pages, which were semantically chunked. Appendices and TOCs were excluded to keep search results relevant.
+## Documentation
 
-### _Modeling Approach & Results:_
-The deep learning RAG chatbot's identity comes from a simple, prompt-based input and clear output based on writing from autistic individuals and trusted community voices—unlike confusing advice from traditional organizations.
+Comprehensive documentation is available in the [docs](./docs) directory:
 
-Running Aya Expanse locally via Ollama and LangChain yielded strong results. However, switching to Hugging Face’s inference API revealed issues: NUL characters from database retrieval were breaking outputs. These weren’t picked up locally but impacted the API, so preprocessing was added to strip them out.
+- [Technical Documentation](./docs/technical.md)
+- [API Documentation](./docs/api.md)
+- [Deployment Guide](./docs/deployment.md)
+- [User Manual](./docs/user_manual.md)
+- [Compliance Documentation](./docs/compliance.md)
+- [Development Environment Setup](./docs/development_environment.md)
 
-Results:
-- **DL (Aya)**: As expected, this performed best, enabling context-aware generation. Evaluated via LLM judgment and feedback from two parents of special needs children—results were great.
+## Quick Start
 
-### _Why is RAG the only viable approach?_
-The RAG chatbot was the only viable approach for this task because both the naive and non-deep learning (non-DL) methods were far too simplistic as a means for generating text while gauging contextual nuance and situations where a word's meaning can be changed between homonyms, synonyms and antonyms (a common problem for these approaches). The naive method, primarily used for surface-level similarity via the Jaccard score, could only identify exact or near-exact sentence matches. For obvious reasons, this fails to capture deeper semantic meaning/contextuality. The non-DL approach, which attempted topic modeling and clustering using methods like Hidden Markov Models (HMMs), struggled with convergence and produced overly simplistic groupings, often based on sentence length because of the complex corpus of autobiographical information. These methods also lacked the capacity for natural language understanding or generation, making them unusable for producing helpful answers. Alternatively, the RAG framework, paired with our LLM, allowed for coherent answer generation—making it the only approach capable of handling the task.
+1. Clone the repository
+2. Install dependencies:
+   ```
+   pip install -r requirements.txt
+   cd rust_scripts && cargo build && cd ..
+   ```
+3. Set up environment variables in `.env`:
+   ```
+   KNOWLEDGE_BASE_ID=your-aws-bedrock-knowledge-base-id
+   ```
+4. Start a local LLM server (Llamafile/Zephyr)
+5. Run the Streamlit interface:
+   ```
+   streamlit run app.py
+   ```
 
-### _How do I run this project?_
-#### Run Locally
-To run the chatbot locally using the Aya Expanse model:
+## Future Work
 
-```bash
-python scripts/main
-```
-
-from the project's root directory.
-
-Make sure you have the `aya-expanse:latest` model running on your local Ollama instance.
-
-#### Running Tests Locally
-To run the test suite:
-
-```bash
-python tests
-```
-
-#### Website Link
-You can also access the deployed version here:  
-[[Render Link](https://nlp-aph.onrender.com)]
+- Explore sentence clustering / non-DL / naive approaches for data cleaning / organization
+- Shift to a different deployment platform (AWS EC2 / AppRunner and deal with cost) / migrate to a blog website
+- Curate better ground truth from parents for testing and evaluation
