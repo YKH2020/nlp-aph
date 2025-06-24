@@ -29,9 +29,9 @@ def retrieve_context(query: str) -> str:
     # Extract content from the retrieval results
     chunks = [doc["content"]["text"] for doc in retrieval_response["retrievalResults"]]
 
-    print(f"Retrieved {len(chunks)} chunks.")
-    for i, chunk in enumerate(chunks):
-        print(f"Chunk {i+1}: {chunk[:50]}...")
+    # print(f"Retrieved {len(chunks)} chunks.")
+    # for i, chunk in enumerate(chunks):
+    #     print(f"Chunk {i+1}: {chunk[:50]}...")
 
     context = "\n\n".join(chunks)
     
